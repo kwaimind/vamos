@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func main() {
@@ -14,11 +15,17 @@ func main() {
 	name := PickFilter(args)
 
 	packagePath := config.PackagejsonName
+	ignoreFile := config.GitIgnore
 
 	if name != "" {
-		packagePath = FindPackageJson(config.RootDir, name)
-		fmt.Println(name, packagePath)
+		nextPackagePath := FindPackageJson(config.RootDir, name)
+		packagePath = nextPackagePath
+		ignoreFile = strings.Replace(nextPackagePath, config.PackagejsonName, config.GitIgnore, 1)
 	}
+
+	ignoreFiles, _ := SetupIgnore(ignoreFile)
+
+	fmt.Println(ignoreFiles)
 
 	file, err := os.Open(packagePath)
 	if err != nil {
@@ -41,8 +48,12 @@ func main() {
 
 	cmd := exec.Command(packageManager, nextargs...)
 
+	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	cmd.Run()
+	cmdErr := cmd.Run()
+	if cmdErr != nil {
+		panic(cmdErr)
+	}
 }

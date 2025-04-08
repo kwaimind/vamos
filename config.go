@@ -18,6 +18,7 @@ type Config struct {
 	NPMRun          string
 	PNPM            string
 	Yarn            string
+	GitIgnore       string
 }
 
 func InitializeConfig() *Config {
@@ -29,5 +30,6 @@ func InitializeConfig() *Config {
 		NPMRun:          "run",
 		PNPM:            "pnpm",
 		Yarn:            "yarn",
+		GitIgnore:       ".gitignore",
 	}
 }
