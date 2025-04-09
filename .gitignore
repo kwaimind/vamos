@@ -24,4 +24,9 @@ go.work.sum
 # env file
 .env
 
+# for testing
+node_modules
+.vscode
+test
+
 vamos

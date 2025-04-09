@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"os"
 	"testing"
 )
@@ -58,10 +57,3 @@ func tempFile(t *testing.T, content string) *os.File {
 	}
 	return tmp
 }
-
-type errorFile struct{}
-
-func (e *errorFile) Read(p []byte) (n int, err error) {
-	return 0, errors.New("read error")
-}
-func (e *errorFile) Close() error { return nil }

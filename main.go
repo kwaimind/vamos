@@ -1,13 +1,22 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
+
+	"github.com/yarlson/pin"
 )
 
 func main() {
+
+	p := pin.New("⚡️ Vamos...",
+		pin.WithSpinnerColor(pin.ColorCyan),
+		pin.WithTextColor(pin.ColorYellow),
+	)
+	cancel := p.Start(context.Background())
+	defer cancel()
 
 	args := ParseArgs()
 	config := InitializeConfig()
@@ -15,17 +24,13 @@ func main() {
 	name := PickFilter(args)
 
 	packagePath := config.PackagejsonName
-	ignoreFile := config.GitIgnore
 
 	if name != "" {
-		nextPackagePath := FindPackageJson(config.RootDir, name)
+		ignoreFile := config.GitIgnore
+		ignoreFiles, _ := SetupIgnore(ignoreFile)
+		nextPackagePath := FindPackageJson(config.RootDir, name, ignoreFiles)
 		packagePath = nextPackagePath
-		ignoreFile = strings.Replace(nextPackagePath, config.PackagejsonName, config.GitIgnore, 1)
 	}
-
-	ignoreFiles, _ := SetupIgnore(ignoreFile)
-
-	fmt.Println(ignoreFiles)
 
 	file, err := os.Open(packagePath)
 	if err != nil {

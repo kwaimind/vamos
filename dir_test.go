@@ -10,7 +10,7 @@ func TestFindPackageJson_FindsMatch(t *testing.T) {
 	tmpDir := createTempPackage(t, "my-project")
 	defer os.RemoveAll(tmpDir)
 
-	result := FindPackageJson(tmpDir, "my-project")
+	result := FindPackageJson(tmpDir, "my-project", make([]string, 0))
 
 	if result == "" {
 		t.Fatal("Expected to find package.json, got empty string")
@@ -24,7 +24,7 @@ func TestFindPackageJson_NoMatch(t *testing.T) {
 	tmpDir := createTempPackage(t, "not-the-right-name")
 	defer os.RemoveAll(tmpDir)
 
-	result := FindPackageJson(tmpDir, "target-name")
+	result := FindPackageJson(tmpDir, "target-name", make([]string, 0))
 
 	if result != "" {
 		t.Errorf("Expected no match, got '%s'", result)

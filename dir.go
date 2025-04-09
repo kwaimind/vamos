@@ -5,9 +5,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 )
 
-func FindPackageJson(rootDir string, packageName string) string {
+func FindPackageJson(rootDir string, packageName string, ignoreFiles []string) string {
 
 	config := InitializeConfig()
 
@@ -17,6 +19,14 @@ func FindPackageJson(rootDir string, packageName string) string {
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
+			}
+
+			isRoot := path == rootDir
+			shouldIgnore := slices.Contains(ignoreFiles, info.Name())
+			skipDotFiles := strings.HasPrefix(info.Name(), ".")
+
+			if !isRoot && info.IsDir() && (shouldIgnore || skipDotFiles) {
+				return filepath.SkipDir
 			}
 
 			if info.Name() == config.PackagejsonName {
@@ -34,7 +44,7 @@ func FindPackageJson(rootDir string, packageName string) string {
 
 				if data.Name == packageName {
 					result = path
-					return fmt.Errorf("found")
+					return nil
 				}
 			}
 
