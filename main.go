@@ -1,22 +1,21 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
-	"github.com/yarlson/pin"
+	"github.com/charmbracelet/lipgloss"
 )
 
-func main() {
+var style = lipgloss.NewStyle().
+	Bold(true).
+	Foreground(lipgloss.Color("#FAFAFA")).
+	Background(lipgloss.Color("#7D56F4"))
 
-	p := pin.New("⚡️ Vamos...",
-		pin.WithSpinnerColor(pin.ColorCyan),
-		pin.WithTextColor(pin.ColorYellow),
-	)
-	cancel := p.Start(context.Background())
-	defer cancel()
+func main() {
+	fmt.Println(style.Render("⚡️ vamos..."))
 
 	args := ParseArgs()
 	config := InitializeConfig()
@@ -34,13 +33,21 @@ func main() {
 
 	file, err := os.Open(packagePath)
 	if err != nil {
-		fmt.Println(err)
+		rootError := err.Error()
+		errMsg := strings.Split(rootError, " : ")[1]
+		reason := fmt.Sprintf("❌ Had problems finding a package.json. %s.", CapitalizeFirst(errMsg))
+		fmt.Println(style.Render(reason))
+		return
 	}
 	defer file.Close()
 
 	data, err := ParseJson(file)
 	if err != nil {
-		panic(err)
+		t := err.Error()
+		fmt.Println(t)
+		reason := fmt.Sprintf("👆 This is probably related to your %s script and not vamos.", "packageManager")
+		fmt.Println(style.Render(reason))
+		return
 	}
 
 	packageManager := Select(data)
@@ -55,10 +62,11 @@ func main() {
 
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stderr = os.Stdin
 
 	cmdErr := cmd.Run()
 	if cmdErr != nil {
-		panic(cmdErr)
+		reason := fmt.Sprintf("👆 This is probably related to your %s script and not vamos.", packageManager)
+		fmt.Println(style.Render(reason))
 	}
 }
