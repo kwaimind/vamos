@@ -13,17 +13,27 @@ func ParseArgs() []string {
 	return os.Args[1:]
 }
 
-func PickFilter(args []string) string {
+func PickFilter(args []string) (string, []string) {
 
 	res := ""
+	filteredArgs := []string{}
 
-	for i := range len(args) - 1 {
+	skipNext := false
+	for i := range len(args) {
+		if skipNext {
+			skipNext = false
+			continue
+		}
 		if strings.ToLower(args[i]) == "-f" {
-			res = args[i+1]
-
+			if i+1 < len(args) {
+				res = args[i+1]
+				skipNext = true
+			}
+		} else {
+			filteredArgs = append(filteredArgs, args[i])
 		}
 	}
 
-	return res
+	return res, filteredArgs
 
 }

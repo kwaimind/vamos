@@ -20,13 +20,17 @@ func main() {
 	args := ParseArgs()
 	config := InitializeConfig()
 
-	name := PickFilter(args)
+	name, filteredArgs := PickFilter(args)
 
 	packagePath := config.PackagejsonName
 
 	if name != "" {
 		ignoreFile := config.GitIgnore
-		ignoreFiles, _ := SetupIgnore(ignoreFile)
+		ignoreFiles, err := SetupIgnore(ignoreFile)
+		if err != nil {
+			// If .gitignore doesn't exist, just use empty ignore list
+			ignoreFiles = []string{}
+		}
 		nextPackagePath := FindPackageJson(config.RootDir, name, ignoreFiles)
 		packagePath = nextPackagePath
 	}
@@ -52,17 +56,17 @@ func main() {
 
 	packageManager := Select(data)
 
-	nextargs := args
+	nextargs := filteredArgs
 
 	if packageManager == config.NPM {
-		nextargs = append([]string{config.NPMRun}, args...)
+		nextargs = append([]string{config.NPMRun}, filteredArgs...)
 	}
 
 	cmd := exec.Command(packageManager, nextargs...)
 
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stdin
+	cmd.Stderr = os.Stderr
 
 	cmdErr := cmd.Run()
 	if cmdErr != nil {

@@ -2,31 +2,25 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strings"
 )
 
-func isDirectory(path string) (bool, error) {
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		return false, err
-	}
-	return fileInfo.IsDir(), err
-}
-
 func SetupIgnore(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		fmt.Println(err)
+		return []string{}, err
 	}
+	defer file.Close()
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		txt := scanner.Text()
-		isDir, _ := isDirectory(txt)
-		if !strings.HasPrefix(txt, "#") && isDir {
+		txt := strings.TrimSpace(scanner.Text())
+		// Skip empty lines and comments
+		if txt != "" && !strings.HasPrefix(txt, "#") {
+			// Remove trailing slashes from directory entries
+			txt = strings.TrimSuffix(txt, "/")
 			lines = append(lines, txt)
 		}
 	}
