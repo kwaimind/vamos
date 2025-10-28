@@ -60,17 +60,25 @@
 
 ---
 
-## Phase 5: UX improvements
+## Phase 5: UX improvements ✅
 
 **Goal**: Better developer experience
 
-- [ ] Add CLI library (cobra or urfave/cli) for proper flag parsing
-- [ ] Add `--help` flag with usage documentation
-- [ ] Add `--version` flag
-- [ ] Add verbose mode (`-v` or `--verbose`) to show which package manager was selected and why
+- [x] Add urfave/cli library for proper flag parsing
+  - Zero external dependencies (beyond stdlib)
+  - Lightweight and fast
+  - Declarative flag definitions
+- [x] Refactor main.go to use urfave/cli structure
+  - Move business logic to `run()` function
+  - Define flags in Command struct
+  - Remove manual arg parsing (PickFilter no longer needed)
+- [x] Add `--help` flag with usage documentation (auto-generated)
+- [x] Add `--version` flag (auto-generated)
+- [x] Add verbose mode (`--verbose`) to show which package manager was selected and why
 - [ ] Better directory structure (cmd/ and internal/)
 
-**Success criteria**: Professional CLI with help, version, and verbose output
+**Success criteria**: Professional CLI with help, version, and verbose output ✅
+**Note**: All core features implemented. Directory restructuring deferred as optional improvement.
 
 ---
 

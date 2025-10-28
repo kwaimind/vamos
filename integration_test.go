@@ -68,28 +68,6 @@ func TestIntegration_FindPackageAndSelectManager(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArgFiltering(t *testing.T) {
-	// Test the full arg filtering flow
-	args := []string{"-f", "frontend", "test", "--watch"}
-
-	name, filteredArgs := PickFilter(args)
-
-	if name != "frontend" {
-		t.Errorf("Expected filter name 'frontend', got '%s'", name)
-	}
-
-	expectedArgs := []string{"test", "--watch"}
-	if len(filteredArgs) != len(expectedArgs) {
-		t.Fatalf("Expected %d args, got %d", len(expectedArgs), len(filteredArgs))
-	}
-
-	for i, arg := range expectedArgs {
-		if filteredArgs[i] != arg {
-			t.Errorf("Expected arg[%d] to be '%s', got '%s'", i, arg, filteredArgs[i])
-		}
-	}
-}
-
 func createTempWorkspace(t *testing.T) string {
 	t.Helper()
 
