@@ -45,6 +45,19 @@ this also works in a workspace environment by running vamos from the root of the
 
 now your command arguments will be called using `pnpm`.
 
+## arguments
+
+`-F <package-name>` - Filter to a specific package in a workspace/monorepo
+
+When working in a monorepo, use `-F` to target a specific package by name. vamos will find the matching package's `package.json` and use its configured package manager.
+
+Example:
+```bash
+vamos -F frontend test
+```
+
+This finds the package named "frontend" and runs the test script using that package's configured manager (e.g., pnpm, npm, yarn).
+
 ## install
 
 right now you need to build the script locally with `make build`. i'm planning on moving this to homebrew later.

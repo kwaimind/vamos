@@ -1,39 +1,35 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"slices"
 	"strings"
 )
 
-func FindPackageJson(rootDir string, packageName string, ignoreFiles []string) string {
-
-	config := InitializeConfig()
-
+func FindPackageJson(rootDir string, packageName string, ignoreFiles []string, config *Config) (string, error) {
 	var result string
 
-	err := filepath.Walk(rootDir,
-		func(path string, info os.FileInfo, err error) error {
+	err := filepath.WalkDir(rootDir,
+		func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
 
 			isRoot := path == rootDir
-			shouldIgnore := slices.Contains(ignoreFiles, info.Name())
-			skipDotFiles := strings.HasPrefix(info.Name(), ".")
+			shouldIgnore := slices.Contains(ignoreFiles, d.Name())
+			skipDotFiles := strings.HasPrefix(d.Name(), ".")
 
-			if !isRoot && info.IsDir() && (shouldIgnore || skipDotFiles) {
+			if !isRoot && d.IsDir() && (shouldIgnore || skipDotFiles) {
 				return filepath.SkipDir
 			}
 
-			if info.Name() == config.PackagejsonName {
+			if d.Name() == config.PackageJSONName {
 
 				file, err := os.Open(path)
 				if err != nil {
-					fmt.Println(err)
+					return err
 				}
 				defer file.Close()
 
@@ -51,9 +47,5 @@ func FindPackageJson(rootDir string, packageName string, ignoreFiles []string) s
 			return nil
 		})
 
-	if err != nil {
-		log.Println(err)
-	}
-
-	return result
+	return result, err
 }

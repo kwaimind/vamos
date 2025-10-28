@@ -4,25 +4,30 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 )
 
-var style = lipgloss.NewStyle().
-	Bold(true).
-	Foreground(lipgloss.Color("#FAFAFA")).
-	Background(lipgloss.Color("#7D56F4"))
-
 func main() {
+	style := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("#FAFAFA")).
+		Background(lipgloss.Color("#7D56F4"))
+
 	fmt.Println(style.Render("⚡️ vamos..."))
 
-	args := ParseArgs()
+	args, err := ParseArgs()
+	if err != nil {
+		fmt.Println(style.Render("❌ " + err.Error()))
+		return
+	}
 	config := InitializeConfig()
 
 	name, filteredArgs := PickFilter(args)
 
-	packagePath := config.PackagejsonName
+	packagePath := config.PackageJSONName
 
 	if name != "" {
 		ignoreFile := config.GitIgnore
@@ -31,7 +36,12 @@ func main() {
 			// If .gitignore doesn't exist, just use empty ignore list
 			ignoreFiles = []string{}
 		}
-		nextPackagePath := FindPackageJson(config.RootDir, name, ignoreFiles)
+		nextPackagePath, err := FindPackageJson(config.RootDir, name, ignoreFiles, config)
+		if err != nil {
+			reason := fmt.Sprintf("❌ Error searching for package: %s", err.Error())
+			fmt.Println(style.Render(reason))
+			return
+		}
 		packagePath = nextPackagePath
 	}
 
@@ -54,7 +64,9 @@ func main() {
 		return
 	}
 
-	packageManager := Select(data)
+	// Get directory of package.json for lockfile detection
+	packageDir := filepath.Dir(packagePath)
+	packageManager := Select(data, packageDir, config)
 
 	nextargs := filteredArgs
 

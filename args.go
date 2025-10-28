@@ -1,16 +1,17 @@
 package main
 
 import (
+	"errors"
 	"os"
 	"strings"
 )
 
-func ParseArgs() []string {
+func ParseArgs() ([]string, error) {
 	if len(os.Args) < 2 {
-		panic("Please provide a command-line argument.")
+		return nil, errors.New("please provide a command-line argument")
 	}
 
-	return os.Args[1:]
+	return os.Args[1:], nil
 }
 
 func PickFilter(args []string) (string, []string) {

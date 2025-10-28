@@ -7,10 +7,14 @@ import (
 )
 
 func TestFindPackageJson_FindsMatch(t *testing.T) {
+	config := InitializeConfig()
 	tmpDir := createTempPackage(t, "my-project")
 	defer os.RemoveAll(tmpDir)
 
-	result := FindPackageJson(tmpDir, "my-project", make([]string, 0))
+	result, err := FindPackageJson(tmpDir, "my-project", make([]string, 0), config)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
 
 	if result == "" {
 		t.Fatal("Expected to find package.json, got empty string")
@@ -21,10 +25,14 @@ func TestFindPackageJson_FindsMatch(t *testing.T) {
 }
 
 func TestFindPackageJson_NoMatch(t *testing.T) {
+	config := InitializeConfig()
 	tmpDir := createTempPackage(t, "not-the-right-name")
 	defer os.RemoveAll(tmpDir)
 
-	result := FindPackageJson(tmpDir, "target-name", make([]string, 0))
+	result, err := FindPackageJson(tmpDir, "target-name", make([]string, 0), config)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
 
 	if result != "" {
 		t.Errorf("Expected no match, got '%s'", result)
@@ -52,8 +60,12 @@ func TestFindPackageJson_WithIgnore(t *testing.T) {
 	}
 
 	// Search with node_modules in ignore list
+	config := InitializeConfig()
 	ignoreList := []string{"node_modules"}
-	result := FindPackageJson(tmpDir, "should-be-ignored", ignoreList)
+	result, err := FindPackageJson(tmpDir, "should-be-ignored", ignoreList, config)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
 
 	// Should not find it because it's ignored
 	if result != "" {
@@ -81,7 +93,11 @@ func TestFindPackageJson_SkipDotFiles(t *testing.T) {
 		t.Fatalf("Failed to write package.json: %v", err)
 	}
 
-	result := FindPackageJson(tmpDir, "hidden-package", make([]string, 0))
+	config := InitializeConfig()
+	result, err := FindPackageJson(tmpDir, "hidden-package", make([]string, 0), config)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
 
 	// Should not find it because dot directories are skipped
 	if result != "" {
@@ -103,11 +119,15 @@ func TestFindPackageJson_WithInvalidJSON(t *testing.T) {
 		t.Fatalf("Failed to write package.json: %v", err)
 	}
 
-	result := FindPackageJson(tmpDir, "test", make([]string, 0))
+	config := InitializeConfig()
+	result, err := FindPackageJson(tmpDir, "test", make([]string, 0), config)
 
-	// Should return empty string because JSON parsing failed
+	// Should return error because JSON parsing failed
+	if err == nil {
+		t.Error("Expected error for invalid JSON")
+	}
 	if result != "" {
-		t.Errorf("Expected no match (invalid JSON), got '%s'", result)
+		t.Errorf("Expected empty result on error, got '%s'", result)
 	}
 }
 

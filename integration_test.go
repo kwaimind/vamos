@@ -26,14 +26,17 @@ func TestIntegration_FindPackageAndSelectManager(t *testing.T) {
 		t.Fatalf("Failed to parse JSON: %v", err)
 	}
 
-	packageManager := Select(data)
+	packageManager := Select(data, tmpDir, config)
 	if packageManager != config.PNPM {
 		t.Errorf("Expected pnpm, got %s", packageManager)
 	}
 
 	// Test 2: Find nested package.json by name
 	ignoreFiles := []string{"node_modules"}
-	foundPath := FindPackageJson(tmpDir, "frontend", ignoreFiles)
+	foundPath, err := FindPackageJson(tmpDir, "frontend", ignoreFiles, config)
+	if err != nil {
+		t.Fatalf("Error finding package: %v", err)
+	}
 
 	if foundPath == "" {
 		t.Fatal("Expected to find frontend package.json")
@@ -59,7 +62,7 @@ func TestIntegration_FindPackageAndSelectManager(t *testing.T) {
 		t.Errorf("Expected name 'frontend', got '%s'", frontendData.Name)
 	}
 
-	frontendManager := Select(frontendData)
+	frontendManager := Select(frontendData, filepath.Dir(foundPath), config)
 	if frontendManager != config.Yarn {
 		t.Errorf("Expected yarn for frontend, got %s", frontendManager)
 	}

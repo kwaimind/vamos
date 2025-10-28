@@ -48,7 +48,10 @@ func TestParseArgs_WithArgs(t *testing.T) {
 
 	os.Args = []string{"vamos", "test", "--watch"}
 
-	result := ParseArgs()
+	result, err := ParseArgs()
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if len(result) != 2 {
 		t.Fatalf("Expected 2 args, got %d", len(result))
@@ -61,15 +64,15 @@ func TestParseArgs_WithArgs(t *testing.T) {
 func TestParseArgs_NoArgs(t *testing.T) {
 	// Save original args and restore after test
 	oldArgs := os.Args
-	defer func() {
-		os.Args = oldArgs
-		// Recover from panic
-		if r := recover(); r == nil {
-			t.Error("Expected panic when no args provided")
-		}
-	}()
+	defer func() { os.Args = oldArgs }()
 
 	os.Args = []string{"vamos"}
 
-	ParseArgs()
+	result, err := ParseArgs()
+	if err == nil {
+		t.Error("Expected error when no args provided")
+	}
+	if result != nil {
+		t.Errorf("Expected nil result, got %v", result)
+	}
 }
