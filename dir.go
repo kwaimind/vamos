@@ -40,7 +40,7 @@ func FindPackageJson(rootDir string, packageName string, ignoreFiles []string, c
 
 				if data.Name == packageName {
 					result = path
-					return nil
+					return filepath.SkipAll
 				}
 			}
 
