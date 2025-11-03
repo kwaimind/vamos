@@ -8,8 +8,9 @@ type Engines struct {
 }
 
 type PackageJson struct {
-	Engines *Engines `json:"engines"`
-	Name    string   `json:"name"`
+	Engines *Engines          `json:"engines"`
+	Name    string            `json:"name"`
+	Scripts map[string]string `json:"scripts,omitempty"`
 }
 
 type Config struct {

@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/urfave/cli/v3"
 )
 
@@ -42,22 +41,17 @@ func main() {
 }
 
 func run(ctx context.Context, cmd *cli.Command) error {
-	style := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("#FAFAFA")).
-		Background(lipgloss.Color("#7D56F4"))
-
 	verbose := cmd.Bool("verbose")
 	filter := cmd.String("filter")
 	args := cmd.Args().Slice()
 
 
 	if len(args) == 0 {
-		fmt.Println(style.Render("❌ please provide a command to run"))
+		fmt.Println("❌ please provide a command to run")
 		return nil
 	}
 
-	fmt.Println(style.Render("⚡️ vamos..."))
+	fmt.Println("⚡️ vamos...")
 
 	config := InitializeConfig()
 	packagePath := config.PackageJSONName
@@ -75,7 +69,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		nextPackagePath, err := FindPackageJson(config.RootDir, filter, ignoreFiles, config)
 		if err != nil {
 			reason := fmt.Sprintf("❌ Error searching for package: %s", err.Error())
-			fmt.Println(style.Render(reason))
+			fmt.Println(reason)
 			return nil
 		}
 		packagePath = nextPackagePath
@@ -90,7 +84,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		rootError := err.Error()
 		errMsg := strings.Split(rootError, " : ")[1]
 		reason := fmt.Sprintf("❌ Had problems finding a package.json. %s.", CapitalizeFirst(errMsg))
-		fmt.Println(style.Render(reason))
+		fmt.Println(reason)
 		return nil
 	}
 	defer file.Close()
@@ -100,10 +94,9 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		t := err.Error()
 		fmt.Println(t)
 		reason := fmt.Sprintf("👆 This is probably related to your %s script and not vamos.", "packageManager")
-		fmt.Println(style.Render(reason))
+		fmt.Println(reason)
 		return nil
 	}
-
 
 	// Detect package manager
 	packageDir := filepath.Dir(packagePath)
@@ -150,6 +143,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 
 	// Execute
 	execCmd := exec.Command(packageManager, nextargs...)
+	execCmd.Dir = packageDir
 	execCmd.Stdin = os.Stdin
 	execCmd.Stdout = os.Stdout
 	execCmd.Stderr = os.Stderr
@@ -157,7 +151,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 	cmdErr := execCmd.Run()
 	if cmdErr != nil {
 		reason := fmt.Sprintf("👆 This is probably related to your %s script and not vamos.", packageManager)
-		fmt.Println(style.Render(reason))
+		fmt.Println(reason)
 	}
 
 	return nil
