@@ -6,13 +6,18 @@ import (
 	"path/filepath"
 )
 
+type SelectResult struct {
+	PackageManager  string
+	DetectionMethod string
+}
+
 // DetectFromLockfile detects package manager from lockfiles in the given directory
-func DetectFromLockfile(dir string, config *Config) string {
+func DetectFromLockfile(dir string) string {
 	lockfiles := map[string]string{
-		"bun.lockb":        config.Bun,
-		"pnpm-lock.yaml":   config.PNPM,
-		"yarn.lock":        config.Yarn,
-		"package-lock.json": config.NPM,
+		"bun.lockb":         bun,
+		"pnpm-lock.yaml":    pnpm,
+		"yarn.lock":         yarn,
+		"package-lock.json": npm,
 	}
 
 	for lockfile, pm := range lockfiles {
@@ -24,33 +29,51 @@ func DetectFromLockfile(dir string, config *Config) string {
 	return ""
 }
 
-func Select(data *PackageJson, dir string, config *Config) string {
-	packageManager := ""
+func Select(data *PackageJson, dir string) SelectResult {
+	result := SelectResult{}
 
 	// Try to detect from engines field first
 	if data.Engines != nil {
 		switch {
 		case data.Engines.NPM != "":
-			packageManager = config.NPM
+			result.PackageManager = npm
+			result.DetectionMethod = "engines.npm in package.json"
 		case data.Engines.PNPM != "":
-			packageManager = config.PNPM
+			result.PackageManager = pnpm
+			result.DetectionMethod = "engines.pnpm in package.json"
 		case data.Engines.Yarn != "":
-			packageManager = config.Yarn
+			result.PackageManager = yarn
+			result.DetectionMethod = "engines.yarn in package.json"
 		case data.Engines.Bun != "":
-			packageManager = config.Bun
+			result.PackageManager = bun
+			result.DetectionMethod = "engines.bun in package.json"
 		}
 	}
 
 	// If no package manager found in engines, try lockfile detection
-	if packageManager == "" {
-		packageManager = DetectFromLockfile(dir, config)
+	if result.PackageManager == "" {
+		lockfilePM := DetectFromLockfile(dir)
+		if lockfilePM != "" {
+			result.PackageManager = lockfilePM
+			switch lockfilePM {
+			case bun:
+				result.DetectionMethod = "bun.lockb"
+			case pnpm:
+				result.DetectionMethod = "pnpm-lock.yaml"
+			case yarn:
+				result.DetectionMethod = "yarn.lock"
+			case npm:
+				result.DetectionMethod = "package-lock.json"
+			}
+		}
 	}
 
 	// If still no package manager, fall back to npm
-	if packageManager == "" {
+	if result.PackageManager == "" {
 		fmt.Println("No package manager specified, falling back to npm")
-		packageManager = config.NPM
+		result.PackageManager = npm
+		result.DetectionMethod = "default (npm)"
 	}
 
-	return packageManager
+	return result
 }

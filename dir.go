@@ -8,16 +8,16 @@ import (
 	"strings"
 )
 
-func FindPackageJson(rootDir string, packageName string, ignoreFiles []string, config *Config) (string, error) {
+func FindPackageJson(dir string, packageName string, ignoreFiles []string) (string, error) {
 	var result string
 
-	err := filepath.WalkDir(rootDir,
+	err := filepath.WalkDir(dir,
 		func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
 
-			isRoot := path == rootDir
+			isRoot := path == dir
 			shouldIgnore := slices.Contains(ignoreFiles, d.Name())
 			skipDotFiles := strings.HasPrefix(d.Name(), ".")
 
@@ -25,7 +25,7 @@ func FindPackageJson(rootDir string, packageName string, ignoreFiles []string, c
 				return filepath.SkipDir
 			}
 
-			if d.Name() == config.PackageJSONName {
+			if d.Name() == packageJSONName {
 
 				file, err := os.Open(path)
 				if err != nil {

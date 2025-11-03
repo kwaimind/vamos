@@ -1,5 +1,16 @@
 package main
 
+const (
+	packageJSONName = "package.json"
+	rootDir         = "."
+	npm             = "npm"
+	npmRun          = "run"
+	pnpm            = "pnpm"
+	yarn            = "yarn"
+	bun             = "bun"
+	gitIgnore       = ".gitignore"
+)
+
 type Engines struct {
 	NPM  string `json:"npm,omitempty"`
 	PNPM string `json:"pnpm,omitempty"`
@@ -11,29 +22,4 @@ type PackageJson struct {
 	Engines *Engines          `json:"engines"`
 	Name    string            `json:"name"`
 	Scripts map[string]string `json:"scripts,omitempty"`
-}
-
-type Config struct {
-	PackageJSONName string
-	RootDir         string
-	NPM             string
-	NPMRun          string
-	PNPM            string
-	Yarn            string
-	Bun             string
-	GitIgnore       string
-}
-
-func InitializeConfig() *Config {
-
-	return &Config{
-		PackageJSONName: "package.json",
-		RootDir:         ".",
-		NPM:             "npm",
-		NPMRun:          "run",
-		PNPM:            "pnpm",
-		Yarn:            "yarn",
-		Bun:             "bun",
-		GitIgnore:       ".gitignore",
-	}
 }

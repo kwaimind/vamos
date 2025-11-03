@@ -11,6 +11,8 @@
 
 `vamos` is a simple tool to run the correct package manager when jumping between projects or in monorepo environments.
 
+This came from a frustration of trying to run `pnpm` in a `yarn` package.
+
 It looks for the closest `package.json` file and detects the package manager using:
 1. The `engines` field in package.json (preferred)
 2. Lockfile detection (package-lock.json, pnpm-lock.yaml, yarn.lock, bun.lockb)

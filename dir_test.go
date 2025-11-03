@@ -7,11 +7,11 @@ import (
 )
 
 func TestFindPackageJson_FindsMatch(t *testing.T) {
-	config := InitializeConfig()
+	
 	tmpDir := createTempPackage(t, "my-project")
 	defer os.RemoveAll(tmpDir)
 
-	result, err := FindPackageJson(tmpDir, "my-project", make([]string, 0), config)
+	result, err := FindPackageJson(tmpDir, "my-project",  make([]string, 0))
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -25,11 +25,11 @@ func TestFindPackageJson_FindsMatch(t *testing.T) {
 }
 
 func TestFindPackageJson_NoMatch(t *testing.T) {
-	config := InitializeConfig()
+	
 	tmpDir := createTempPackage(t, "not-the-right-name")
 	defer os.RemoveAll(tmpDir)
 
-	result, err := FindPackageJson(tmpDir, "target-name", make([]string, 0), config)
+	result, err := FindPackageJson(tmpDir, "target-name",  make([]string, 0))
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -60,9 +60,9 @@ func TestFindPackageJson_WithIgnore(t *testing.T) {
 	}
 
 	// Search with node_modules in ignore list
-	config := InitializeConfig()
+	
 	ignoreList := []string{"node_modules"}
-	result, err := FindPackageJson(tmpDir, "should-be-ignored", ignoreList, config)
+	result, err := FindPackageJson(tmpDir, "should-be-ignored", ignoreList)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -93,8 +93,8 @@ func TestFindPackageJson_SkipDotFiles(t *testing.T) {
 		t.Fatalf("Failed to write package.json: %v", err)
 	}
 
-	config := InitializeConfig()
-	result, err := FindPackageJson(tmpDir, "hidden-package", make([]string, 0), config)
+	
+	result, err := FindPackageJson(tmpDir, "hidden-package",  make([]string, 0))
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -119,8 +119,8 @@ func TestFindPackageJson_WithInvalidJSON(t *testing.T) {
 		t.Fatalf("Failed to write package.json: %v", err)
 	}
 
-	config := InitializeConfig()
-	result, err := FindPackageJson(tmpDir, "test", make([]string, 0), config)
+	
+	result, err := FindPackageJson(tmpDir, "test",  make([]string, 0))
 
 	// Should return error because JSON parsing failed
 	if err == nil {
