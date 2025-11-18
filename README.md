@@ -59,6 +59,12 @@ this also works in a workspace environment by running vamos from the root of the
 
 now your command arguments will be called using `pnpm`.
 
+## install
+```bash
+brew tap kwaimind/vamos https://github.com/kwaimind/vamos
+brew install vamos
+```
+
 ## arguments
 
 ### `-f, --filter <package-name>`
@@ -84,15 +90,3 @@ Display usage information and available options.
 
 ### `--version, -v`
 Display the current version of vamos.
-
-## install
-
-### homebrew
-```bash
-brew install kwaimind/vamos/vamos https://github.com/kwaimind/vamos
-```
-
-### build from source
-```bash
-make build
-```

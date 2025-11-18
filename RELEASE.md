@@ -61,6 +61,8 @@ This will:
 6. Test installation:
    ```bash
    brew uninstall vamos  # if previously installed
-   brew install kwaimind/vamos/vamos https://github.com/kwaimind/vamos
+   brew untap kwaimind/vamos  # if previously tapped
+   brew tap kwaimind/vamos https://github.com/kwaimind/vamos
+   brew install vamos
    vamos --version
    ```
