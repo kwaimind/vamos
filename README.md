@@ -87,4 +87,12 @@ Display the current version of vamos.
 
 ## install
 
-right now you need to build the script locally with `make build`. i'm planning on moving this to homebrew later.
+### homebrew
+```bash
+brew install kwaimind/vamos/vamos https://github.com/kwaimind/vamos
+```
+
+### build from source
+```bash
+make build
+```
