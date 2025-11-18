@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var version = "0.2.0"
+var version = "0.3.0"
 
 func main() {
 	stopOn := 1
@@ -107,9 +107,15 @@ func run(ctx context.Context, cmd *cli.Command) error {
 
 	// Build command
 	nextargs := args
+
+	// Strip "run" if it's the first argument (e.g., "vamos run test" -> "test")
+	if len(args) > 1 && args[0] == npmRun {
+		nextargs = args[1:]
+	}
+
 	isProtected := false
 	for _, cmd := range protectedCommands {
-		if args[0] == cmd {
+		if nextargs[0] == cmd {
 			isProtected = true
 			break
 		}
@@ -117,7 +123,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 
 	// For npm, add "run" prefix unless it's a protected command
 	if selection.PackageManager == npm && !isProtected {
-		nextargs = append([]string{npmRun}, args...)
+		nextargs = append([]string{npmRun}, nextargs...)
 	}
 
 	// Execute
