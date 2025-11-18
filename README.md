@@ -11,7 +11,7 @@
 
 `vamos` is a simple tool to run the correct package manager when jumping between projects or in monorepo environments.
 
-This came from a frustration of trying to run `pnpm` in a `yarn` package.
+This came from a frustration of having to juggle different package managers across different repos, and constantly forgetting which was which.
 
 It looks for the closest `package.json` file and detects the package manager using:
 1. The `engines` field in package.json (preferred)
