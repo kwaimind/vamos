@@ -11,6 +11,8 @@ const (
 	gitIgnore       = ".gitignore"
 )
 
+var protectedCommands = []string{"install", "i"}
+
 type Engines struct {
 	NPM  string `json:"npm,omitempty"`
 	PNPM string `json:"pnpm,omitempty"`

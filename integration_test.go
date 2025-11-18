@@ -66,6 +66,35 @@ func TestIntegration_FindPackageAndSelectManager(t *testing.T) {
 	}
 }
 
+func TestProtectedCommands(t *testing.T) {
+	tests := []struct {
+		name       string
+		command    string
+		isProtected bool
+	}{
+		{"install command", "install", true},
+		{"i alias", "i", true},
+		{"build command", "build", false},
+		{"test command", "test", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			isProtected := false
+			for _, cmd := range protectedCommands {
+				if tt.command == cmd {
+					isProtected = true
+					break
+				}
+			}
+
+			if isProtected != tt.isProtected {
+				t.Errorf("Command %s: expected protected=%v, got %v", tt.command, tt.isProtected, isProtected)
+			}
+		})
+	}
+}
+
 func createTempWorkspace(t *testing.T) string {
 	t.Helper()
 

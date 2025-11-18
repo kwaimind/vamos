@@ -107,7 +107,16 @@ func run(ctx context.Context, cmd *cli.Command) error {
 
 	// Build command
 	nextargs := args
-	if selection.PackageManager == npm {
+	isProtected := false
+	for _, cmd := range protectedCommands {
+		if args[0] == cmd {
+			isProtected = true
+			break
+		}
+	}
+
+	// For npm, add "run" prefix unless it's a protected command
+	if selection.PackageManager == npm && !isProtected {
 		nextargs = append([]string{npmRun}, args...)
 	}
 
