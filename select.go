@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -70,7 +69,6 @@ func Select(data *PackageJson, dir string) SelectResult {
 
 	// If still no package manager, fall back to npm
 	if result.PackageManager == "" {
-		fmt.Println("No package manager specified, falling back to npm")
 		result.PackageManager = npm
 		result.DetectionMethod = "default (npm)"
 	}
